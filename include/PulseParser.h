@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <functional>
 #include "PulseLexer.h"
 
 // AST NODES
@@ -56,11 +57,18 @@ struct ASTLetStatement : ASTNode
     std::unique_ptr<ASTExpression> value;
 };
 
+
 struct ASTStatement : ASTNode 
 {
-    // Either Let or FunctionCall
+    // Either Let or FunctionCall or FunctionDef
     std::unique_ptr<ASTNode> content;
 };
+struct ASTFunctionDef : ASTNode {
+    std::string name;
+    std::vector<std::string> parameters; 
+    std::vector<std::unique_ptr<ASTStatement>> body;
+};
+
 
 // PARSER
 
@@ -82,6 +90,7 @@ private:
     std::unique_ptr<ASTLetStatement> ParseLet();
     std::unique_ptr<ASTExpression> ParseExpression();
     std::unique_ptr<ASTFunctionCall> ParseFunctionCall(const std::string& name);
+    std::unique_ptr<ASTFunctionDef> ParseFunctionDef();
     std::unique_ptr<ASTExpression> ParsePrimary();
 
     std::unique_ptr<ASTExpression> ParseTerm();

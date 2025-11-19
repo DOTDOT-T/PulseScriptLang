@@ -2,17 +2,23 @@
 #include <string>
 #include <vector>
 #include <cctype>
+#include <variant>
+
+using Value = std::variant<int, std::string>;
 
 enum class TokenType {
     Identifier,
     Number,
     StringLiteral,
+    Function,   // custom function made by user
 
     Let,        // var declaraction
     Arrow,      // "->"
     LParen,     // "("
     RParen,     // ")"
     Comma,      // ","
+    LBrace,
+    RBrace,
 
     Plus,
     Minus,

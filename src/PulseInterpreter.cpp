@@ -15,15 +15,6 @@ PulseInterpreter::PulseInterpreter()
         std::cout << std::endl;
         return 0;
     });
-    RegisterFunction("AddInt", [this](const std::vector<Value>& args) -> Value
-    {
-        int result = 0;
-        for (const auto& v : args)
-        {
-            result += std::get<int>(v);
-        }
-        return result;
-    });
 }
 
 void PulseInterpreter::RegisterFunction(const std::string& name, std::function<Value(const std::vector<Value>&)> func) 
@@ -35,30 +26,44 @@ void PulseInterpreter::Execute(const std::vector<std::unique_ptr<ASTStatement>>&
 {
     for (auto& stmt : stmts) 
     {
-        if (auto letStmt = dynamic_cast<ASTLetStatement*>(stmt->content.get())) 
-        {
+        if (auto letStmt = dynamic_cast<ASTLetStatement*>(stmt->content.get())) {
+            // exécution d'un let
             Value val = EvalExpression(letStmt->value.get());
             scope.variables[letStmt->varName] = val;
-        } 
-        else if (auto call = dynamic_cast<ASTFunctionCall*>(stmt->content.get())) 
-        {
-            std::vector<Value> args;
-            for (auto& argExpr : call->args) 
-            {
-                args.push_back(EvalExpression(argExpr.get()));
-            }
-            auto it = nativeFunctions.find(call->name);
-            if (it != nativeFunctions.end()) 
-            {
-                it->second(args);
-            } else 
-            {
-                throw std::runtime_error("Unknown function: " + call->name);
-            }
-        } else 
-        {
-            throw std::runtime_error("Unknown statement type");
         }
+        else if (auto fdef = dynamic_cast<ASTFunctionDef*>(stmt->content.get())) {
+            userFunctions[fdef->name] = std::make_unique<ASTFunctionDef>();
+            userFunctions[fdef->name]->name = fdef->name;
+            userFunctions[fdef->name]->parameters = fdef->parameters;
+
+
+            // déplacer le body
+            for (auto& s : fdef->body) {
+                userFunctions[fdef->name]->body.push_back(std::move(s));
+            }
+
+        }
+        else if (auto call = dynamic_cast<ASTFunctionCall*>(stmt->content.get())) {
+            // appel de fonction
+            auto it = userFunctions.find(call->name);
+            if (it != userFunctions.end()) {
+                // exécuter le corps
+                Execute(it->second->body);
+                
+            } else {
+                // fonction native
+                auto itNative = nativeFunctions.find(call->name);
+                if (itNative != nativeFunctions.end()) {
+                    std::vector<Value> args;
+                    for (auto& a : call->args)
+                        args.push_back(EvalExpression(a.get()));
+                    itNative->second(args);
+                } else {
+                    throw std::runtime_error("Unknown function: " + call->name);
+                }
+            }
+        }
+
     }
 }
 

@@ -59,6 +59,12 @@ std::unique_ptr<ASTStatement> PulseParser::ParseStatement() {
         return stmt;
     }
 
+    if (Peek().type == TokenType::Function) {
+        stmt->content = ParseFunctionDef();
+        return stmt;
+    }
+
+
     if (Peek().type == TokenType::Identifier) {
         // Ne pas avancer le curseur ici
         std::string name = Peek().text;
@@ -202,3 +208,49 @@ std::unique_ptr<ASTFunctionCall> PulseParser::ParseFunctionCall(const std::strin
 
     return call;
 }
+
+std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef() 
+{
+    Consume(TokenType::Function, "Expected 'function' keyword");
+
+    if (Peek().type != TokenType::Identifier)
+        throw std::runtime_error("Expected function name after 'function'");
+
+    std::string funcName = Peek().text;
+    Next(); // consume function name
+
+    // Parse arguments (vide pour l'instant)
+    Consume(TokenType::LParen, "Expected '(' after function name");
+    Consume(TokenType::RParen, "Expected ')' after function arguments");
+
+    // On attend le '{' pour commencer le corps
+    Consume(TokenType::LBrace, "Expected '{' to start function body");
+
+    std::vector<std::unique_ptr<ASTStatement>> body;
+
+    int braceDepth = 1; // on est dans un bloc
+    while (braceDepth > 0) {
+        Token t = Peek();
+        if (t.type == TokenType::LBrace) {
+            braceDepth++;
+            Next();
+        }
+        else if (t.type == TokenType::RBrace) {
+            braceDepth--;
+            Next();
+        }
+        else if (t.type == TokenType::EndOfFile) {
+            throw std::runtime_error("Unexpected end of file in function body");
+        }
+        else {
+            body.push_back(ParseStatement());
+        }
+    }
+
+    auto funcDef = std::make_unique<ASTFunctionDef>();
+    funcDef->name = funcName;
+    funcDef->body = std::move(body);
+
+    return funcDef;
+}
+

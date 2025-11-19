@@ -3,11 +3,8 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <variant>
-#include <functional>
 #include "PulseParser.h"
 
-using Value = std::variant<int, std::string>;
 
 struct Scope 
 {
@@ -32,4 +29,6 @@ private:
 
     Scope scope;
     std::unordered_map<std::string, std::function<Value(const std::vector<Value>&)>> nativeFunctions;
+    std::unordered_map<std::string, std::unique_ptr<ASTFunctionDef>> userFunctions;
+
 };

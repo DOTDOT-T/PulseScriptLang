@@ -43,9 +43,10 @@ Token PulseLexer::Next()
     if (c == ')') { pos++; return { TokenType::RParen, ")" }; }
     if (c == ',') { pos++; return { TokenType::Comma, "," }; }
     if (c == '+') { pos++; return { TokenType::Plus, "+" }; }
-    if (c == '-' && source[pos+1] != '>') { pos++; return { TokenType::Minus, "-" }; }
     if (c == '*') { pos++; return { TokenType::Star, "*" }; }
     if (c == '/') { pos++; return { TokenType::Slash, "/" }; }
+    if (c == '{') { pos++; return { TokenType::LBrace, "{" }; }
+    if (c == '}') { pos++; return { TokenType::RBrace, "}" }; }
 
     // --- arrow "->" ---
     if (c == '-' && pos + 1 < source.size() && source[pos+1] == '>')
@@ -53,6 +54,8 @@ Token PulseLexer::Next()
         pos += 2;
         return { TokenType::Arrow, "->" };
     }
+    // --- minus, not arrow ---
+    if (c == '-') { pos++; return { TokenType::Minus, "-" }; }
 
     // --- string literal ---
     if (c == '"') 
@@ -93,6 +96,11 @@ Token PulseLexer::MakeIdentifierOrKeyword()
     if (text == "let") 
     {
         return { TokenType::Let, text };
+    }
+
+    if (text == "function")
+    {
+        return {TokenType::Function, text};
     }
 
     return { TokenType::Identifier, text };
