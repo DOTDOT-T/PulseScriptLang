@@ -1,0 +1,10 @@
+^D:\SVN\ELEVES\DLEXTERIAQUE\PULSESCRIPT\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/SVN/Eleves/dlexteriaque/PulseScript -BD:/SVN/Eleves/dlexteriaque/PulseScript/build --check-stamp-file D:/SVN/Eleves/dlexteriaque/PulseScript/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

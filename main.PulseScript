@@ -1,0 +1,5 @@
+let age -> 20
+let delta -> 9 * 10
+let name -> "Dorian"
+log("the age of", name,"is", age)
+log("adapt age with the delta :", delta, "age :", age + delta)

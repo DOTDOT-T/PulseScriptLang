@@ -1,0 +1,129 @@
+#include "PulseLexer.h"
+#include <iostream>
+
+PulseLexer::PulseLexer(const std::string& src)
+    : source(src)
+{
+
+}
+
+bool PulseLexer::End() const 
+{
+    return pos >= source.size();
+}
+
+void PulseLexer::SkipSpaces() 
+{
+    while (!End() && std::isspace(source[pos])) 
+    {
+        pos++;
+    }
+}
+
+Token PulseLexer::Peek() 
+{
+    size_t old = pos;
+    Token t = Next();
+    pos = old;
+    return t;
+}
+
+Token PulseLexer::Next() 
+{
+    SkipSpaces();
+    if (End()) {
+        return { TokenType::EndOfFile, "" };
+    }
+
+    char c = source[pos];
+
+
+    // --- punctuation ---
+    if (c == '(') { pos++; return { TokenType::LParen, "(" }; }
+    if (c == ')') { pos++; return { TokenType::RParen, ")" }; }
+    if (c == ',') { pos++; return { TokenType::Comma, "," }; }
+    if (c == '+') { pos++; return { TokenType::Plus, "+" }; }
+    if (c == '-' && source[pos+1] != '>') { pos++; return { TokenType::Minus, "-" }; }
+    if (c == '*') { pos++; return { TokenType::Star, "*" }; }
+    if (c == '/') { pos++; return { TokenType::Slash, "/" }; }
+
+    // --- arrow "->" ---
+    if (c == '-' && pos + 1 < source.size() && source[pos+1] == '>')
+    {
+        pos += 2;
+        return { TokenType::Arrow, "->" };
+    }
+
+    // --- string literal ---
+    if (c == '"') 
+    {
+        return MakeString();
+    }
+
+    // --- number ---
+    if (std::isdigit(c)) 
+    {
+        return MakeNumber();
+    }
+
+    // --- identifier or keyword ---
+    if (std::isalpha(c) || c == '_') 
+    {
+        return MakeIdentifierOrKeyword();
+    }
+
+    // Unknown char (no error for now)
+    pos++;
+    return Next();
+}
+
+Token PulseLexer::MakeIdentifierOrKeyword() 
+{
+    size_t start = pos;
+
+    while (!End() &&
+        (std::isalnum(source[pos]) || source[pos] == '_'))
+    {
+        pos++;
+    }
+
+    std::string text = source.substr(start, pos - start);
+
+
+    if (text == "let") 
+    {
+        return { TokenType::Let, text };
+    }
+
+    return { TokenType::Identifier, text };
+}
+
+Token PulseLexer::MakeNumber() 
+{
+    size_t start = pos;
+
+    while (!End() && std::isdigit(source[pos])) 
+    {
+        pos++;
+    }
+
+    std::string text = source.substr(start, pos - start);
+    return { TokenType::Number, text };
+}
+
+Token PulseLexer::MakeString()
+{
+    pos++; // skip opening quote
+    size_t start = pos;
+
+    while (!End() && source[pos] != '"') 
+    {
+        pos++;
+    }
+
+    std::string text = source.substr(start, pos - start);
+
+    if (!End()) pos++; // consume closing quote
+
+    return { TokenType::StringLiteral, text };
+}

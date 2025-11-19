@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\SVN\Eleves\dlexteriaque\PulseScript\build\CMakeFiles\c6f5d5f0c27874edef3e99befdad3629\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0F2371E3-56A4-3F07-B14C-A269E7D09F0F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
