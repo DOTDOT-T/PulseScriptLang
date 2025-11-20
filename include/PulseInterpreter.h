@@ -1,3 +1,42 @@
+/**
+ * @file PulseInterpreter.h
+ * @author
+ *     Dorian LEXTERIAQUE (dlexteriaque@gmail.com)
+ *
+ * @brief
+ *     Runtime execution engine for the PulseScript language.
+ *
+ *     The PulseInterpreter walks the AST produced by the parser and executes
+ *     the program in real-time. It manages variable scopes, user-defined
+ *     functions, native bindings, and expression evaluation with strict
+ *     type rules.
+ *
+ *     Designed for seamless integration inside the Pulse Engine, the
+ *     interpreter enables high-level gameplay scripting with minimal overhead.
+ *     Its approach favors predictable behavior, straightforward debugging,
+ *     and integration with engine-level systems (logging, entity access,
+ *     real-time variables, etc.).
+ *
+ *     Core responsibilities:
+ *       - Evaluate expressions (numeric, float, string, identifiers, binary ops)
+ *       - Execute statements (let, function definitions, function calls)
+ *       - Maintain execution scope for variables
+ *       - Manage user-defined function contexts and call stacks
+ *       - Expose native engine functions to scripts
+ *
+ *     The interpreter is intentionally lightweight and single-pass, enabling
+ *     the Pulse Engine to run scripted logic every frame, during events,
+ *     or inside editor tools without performance penalties.
+ *
+ * @version 0.2
+ * @date 2025-11-20
+ *
+ * @copyright
+ *     Copyright (c) 2025 — Pulse Engine
+ *     All rights reserved.
+ *
+ */
+
 #pragma once
 #include <unordered_map>
 #include <string>
