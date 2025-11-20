@@ -41,7 +41,7 @@ struct Scope
 
 struct ASTExpression : ASTNode
 {
-    virtual ~ASTExpression() = default;
+    virtual ~ASTExpression() {};
     virtual Value Evaluate(const Scope& scope) const = 0;
 };
 

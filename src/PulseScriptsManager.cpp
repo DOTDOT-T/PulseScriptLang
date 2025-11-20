@@ -1,0 +1,28 @@
+#include "PulseScriptsManager.h"
+#include "PulseScript.h"
+
+std::unordered_map<std::string, std::shared_ptr<PulseScript>> PulseScriptsManager::scripts;
+
+void PulseScriptsManager::AddScriptToDatabase(const std::string& scriptPath)
+{
+    scripts.emplace(scriptPath, std::make_shared<PulseScript>(scriptPath.c_str()));
+}
+
+std::shared_ptr<PulseScript> PulseScriptsManager::GetScript(const std::string& scriptName)
+{
+    auto it = scripts.find(scriptName);
+    if (it != scripts.end())
+        return it->second;
+
+    try 
+    {
+        auto script = std::make_shared<PulseScript>(scriptName.c_str());
+        scripts.emplace(scriptName, script);
+        return script;
+    }
+    catch (const std::exception& e) 
+    {
+        return nullptr;
+    }
+}
+

@@ -14,5 +14,7 @@ target_sources(PulseParserExample
         src/PulseParser.cpp 
         src/PulseLexer.cpp 
         src/PulseInterpreter.cpp 
+        src/PulseScript.cpp
+        src/PulseScriptsManager.cpp
 )
 target_include_directories(PulseParserExample PRIVATE ${PROJECT_SOURCE_DIR}/include)
