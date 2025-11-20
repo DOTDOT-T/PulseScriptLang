@@ -209,7 +209,7 @@ std::unique_ptr<ASTFunctionCall> PulseParser::ParseFunctionCall(const std::strin
     return call;
 }
 
-std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef() 
+std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
 {
     Consume(TokenType::Function, "Expected 'function' keyword");
 
@@ -219,38 +219,47 @@ std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
     std::string funcName = Peek().text;
     Next(); // consume function name
 
-    // Parse arguments (vide pour l'instant)
     Consume(TokenType::LParen, "Expected '(' after function name");
-    Consume(TokenType::RParen, "Expected ')' after function arguments");
 
-    // On attend le '{' pour commencer le corps
+    // 🟦 Parse parameter list
+    std::vector<std::string> params;
+
+    if (Peek().type != TokenType::RParen) {
+        while (true) {
+
+            if (Peek().type != TokenType::Identifier)
+                throw std::runtime_error("Expected parameter name");
+
+            params.push_back(Peek().text);
+            Next(); // consume identifier
+
+            if (Peek().type == TokenType::Comma) {
+                Next(); // consume comma and continue
+                continue;
+            }
+            break;
+        }
+    }
+
+    Consume(TokenType::RParen, "Expected ')' after parameters");
+
     Consume(TokenType::LBrace, "Expected '{' to start function body");
 
     std::vector<std::unique_ptr<ASTStatement>> body;
 
-    int braceDepth = 1; // on est dans un bloc
-    while (braceDepth > 0) {
-        Token t = Peek();
-        if (t.type == TokenType::LBrace) {
-            braceDepth++;
-            Next();
-        }
-        else if (t.type == TokenType::RBrace) {
-            braceDepth--;
-            Next();
-        }
-        else if (t.type == TokenType::EndOfFile) {
-            throw std::runtime_error("Unexpected end of file in function body");
-        }
-        else {
-            body.push_back(ParseStatement());
-        }
+    while (Peek().type != TokenType::RBrace &&
+           Peek().type != TokenType::EndOfFile)
+    {
+        body.push_back(ParseStatement());
     }
 
-    auto funcDef = std::make_unique<ASTFunctionDef>();
-    funcDef->name = funcName;
-    funcDef->body = std::move(body);
+    Consume(TokenType::RBrace, "Expected '}' at end of function");
 
-    return funcDef;
+    auto func = std::make_unique<ASTFunctionDef>();
+    func->name = funcName;
+    func->parameters = std::move(params);
+    func->body = std::move(body);
+
+    return func;
 }
 

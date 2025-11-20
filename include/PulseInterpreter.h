@@ -18,7 +18,7 @@ public:
 
     // exécution d'une liste de statements
     void Execute(const std::vector<std::unique_ptr<ASTStatement>>& stmts);
-
+    void ExecuteFunction(ASTFunctionDef* func,const std::vector<Value>& args);
     // fonctions natives
     void RegisterFunction(const std::string& name, std::function<Value(const std::vector<Value>&)> func);
 
