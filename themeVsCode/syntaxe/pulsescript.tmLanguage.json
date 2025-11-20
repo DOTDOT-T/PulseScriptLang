@@ -14,7 +14,7 @@
       "patterns": [
         {
           "name": "keyword.control.pulsescript",
-          "match": "\\b(let|function)\\b"
+          "match": "\\b(let|function)\\b|->"
         }
       ]
     },
@@ -69,10 +69,6 @@
 
     "operators": {
       "patterns": [
-        {
-          "name": "keyword.operator.arrow.pulsescript",
-          "match": "->"
-        },
         {
           "name": "keyword.operator.pulsescript",
           "match": "(\\+|\\-|\\*|\\/)"

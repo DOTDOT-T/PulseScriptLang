@@ -8,10 +8,15 @@ function DisplayPlayer(name, life, team)
     log(name, percent, "% life", team)
 }
 
+function Divide(number)
+{
+    let number -> number / 2
+}
+
 DisplayPlayer(player, life, team)
 
 let player -> "PlayerName"
 
+Divide(life)
+
 DisplayPlayer(player, life, team)
-
-
