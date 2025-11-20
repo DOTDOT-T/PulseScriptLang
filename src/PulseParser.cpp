@@ -6,27 +6,35 @@
 // ─── TOKEN UTILITIES ─────────────────────────────────────────────────────────
 //
 
-const Token& PulseParser::Peek(int offset) const {
+const Token &PulseParser::Peek(int offset) const
+{
     size_t index = pos + offset;
-    if (index >= tokens.size()) return tokens.back();
+    if (index >= tokens.size())
+        return tokens.back();
     return tokens[index];
 }
 
-const Token& PulseParser::Next() {
-    if (pos < tokens.size()) pos++;
+const Token &PulseParser::Next()
+{
+    if (pos < tokens.size())
+        pos++;
     return Peek();
 }
 
-bool PulseParser::Match(TokenType type) {
-    if (Peek().type == type) {
+bool PulseParser::Match(TokenType type)
+{
+    if (Peek().type == type)
+    {
         Next();
         return true;
     }
     return false;
 }
 
-bool PulseParser::Consume(TokenType type, const char* error) {
-    if (Peek().type != type) {
+bool PulseParser::Consume(TokenType type, const char *error)
+{
+    if (Peek().type != type)
+    {
         throw std::runtime_error(error);
     }
     Next();
@@ -35,14 +43,17 @@ bool PulseParser::Consume(TokenType type, const char* error) {
 
 // MAIN ENTRY
 
-PulseParser::PulseParser(const std::vector<Token>& tokens)
+PulseParser::PulseParser(const std::vector<Token> &tokens)
     : tokens(tokens)
-{}
+{
+}
 
-std::vector<std::unique_ptr<ASTStatement>> PulseParser::ParseScript() {
+std::vector<std::unique_ptr<ASTStatement>> PulseParser::ParseScript()
+{
     std::vector<std::unique_ptr<ASTStatement>> stmts;
 
-    while (Peek().type != TokenType::EndOfFile) {
+    while (Peek().type != TokenType::EndOfFile)
+    {
         stmts.push_back(ParseStatement());
     }
 
@@ -51,21 +62,24 @@ std::vector<std::unique_ptr<ASTStatement>> PulseParser::ParseScript() {
 
 // PARSE STATEMENT
 
-std::unique_ptr<ASTStatement> PulseParser::ParseStatement() {
+std::unique_ptr<ASTStatement> PulseParser::ParseStatement()
+{
     auto stmt = std::make_unique<ASTStatement>();
 
-    if (Peek().type == TokenType::Let) {
+    if (Peek().type == TokenType::Let)
+    {
         stmt->content = ParseLet();
         return stmt;
     }
 
-    if (Peek().type == TokenType::Function) {
+    if (Peek().type == TokenType::Function)
+    {
         stmt->content = ParseFunctionDef();
         return stmt;
     }
 
-
-    if (Peek().type == TokenType::Identifier) {
+    if (Peek().type == TokenType::Identifier)
+    {
         // Ne pas avancer le curseur ici
         std::string name = Peek().text;
         stmt->content = ParseFunctionCall(name);
@@ -75,9 +89,10 @@ std::unique_ptr<ASTStatement> PulseParser::ParseStatement() {
     throw std::runtime_error("Unexpected token at statement start");
 }
 
-// LET x -> expr 
+// LET x -> expr
 
-std::unique_ptr<ASTLetStatement> PulseParser::ParseLet() {
+std::unique_ptr<ASTLetStatement> PulseParser::ParseLet()
+{
     Consume(TokenType::Let, "Expected 'let'");
 
     if (Peek().type != TokenType::Identifier)
@@ -99,10 +114,12 @@ std::unique_ptr<ASTLetStatement> PulseParser::ParseLet() {
 
 // EXPRESSIONS
 
-std::unique_ptr<ASTExpression> PulseParser::ParseExpression() {
+std::unique_ptr<ASTExpression> PulseParser::ParseExpression()
+{
     auto left = ParseTerm();
 
-    while (Peek().type == TokenType::Plus || Peek().type == TokenType::Minus) {
+    while (Peek().type == TokenType::Plus || Peek().type == TokenType::Minus)
+    {
         char op = (Peek().type == TokenType::Plus) ? '+' : '-';
         Next();
         auto right = ParseTerm();
@@ -112,10 +129,12 @@ std::unique_ptr<ASTExpression> PulseParser::ParseExpression() {
     return left;
 }
 
-std::unique_ptr<ASTExpression> PulseParser::ParseTerm() {
+std::unique_ptr<ASTExpression> PulseParser::ParseTerm()
+{
     auto left = ParseFactor();
 
-    while (Peek().type == TokenType::Star || Peek().type == TokenType::Slash) {
+    while (Peek().type == TokenType::Star || Peek().type == TokenType::Slash)
+    {
         char op = (Peek().type == TokenType::Star) ? '*' : '/';
         Next();
         auto right = ParseFactor();
@@ -125,29 +144,35 @@ std::unique_ptr<ASTExpression> PulseParser::ParseTerm() {
     return left;
 }
 
-std::unique_ptr<ASTExpression> PulseParser::ParseFactor() {
+std::unique_ptr<ASTExpression> PulseParser::ParseFactor()
+{
     Token t = Peek();
 
-    if (t.type == TokenType::Number) {
+    if (t.type == TokenType::Number)
+    {
         Next();
         return std::make_unique<ASTNumber>(std::stoi(t.text));
     }
 
-    if (t.type == TokenType::StringLiteral) {
+    if (t.type == TokenType::StringLiteral)
+    {
         Next();
         return std::make_unique<ASTString>(t.text);
     }
 
-    if (t.type == TokenType::Identifier) {
+    if (t.type == TokenType::Identifier)
+    {
         std::string name = t.text;
-        if (Peek(1).type == TokenType::LParen) {
+        if (Peek(1).type == TokenType::LParen)
+        {
             return ParseFunctionCall(name);
         }
         Next();
         return std::make_unique<ASTIdentifier>(name);
     }
 
-    if (t.type == TokenType::LParen) {
+    if (t.type == TokenType::LParen)
+    {
         Next();
         auto expr = ParseExpression();
         Consume(TokenType::RParen, "Expected ')'");
@@ -157,25 +182,29 @@ std::unique_ptr<ASTExpression> PulseParser::ParseFactor() {
     throw std::runtime_error("Invalid expression start");
 }
 
-
-std::unique_ptr<ASTExpression> PulseParser::ParsePrimary() {
+std::unique_ptr<ASTExpression> PulseParser::ParsePrimary()
+{
     Token t = Peek();
 
-    if (t.type == TokenType::Number) {
+    if (t.type == TokenType::Number)
+    {
         Next();
         return std::make_unique<ASTNumber>(std::stoi(t.text));
     }
 
-    if (t.type == TokenType::StringLiteral) {
+    if (t.type == TokenType::StringLiteral)
+    {
         Next();
         return std::make_unique<ASTString>(t.text);
     }
 
-    if (t.type == TokenType::Identifier) {
+    if (t.type == TokenType::Identifier)
+    {
         // Ici on regarde si c'est un appel de fonction
         std::string name = t.text;
 
-        if (Peek(1).type == TokenType::LParen) {
+        if (Peek(1).type == TokenType::LParen)
+        {
             // Ne pas consommer l'identifiant ici, laisser ParseFunctionCall gérer
             return ParseFunctionCall(name);
         }
@@ -187,9 +216,10 @@ std::unique_ptr<ASTExpression> PulseParser::ParsePrimary() {
     throw std::runtime_error("Invalid expression start");
 }
 
-// FUNCTION CALL :  name(expr, expr...) 
+// FUNCTION CALL :  name(expr, expr...)
 
-std::unique_ptr<ASTFunctionCall> PulseParser::ParseFunctionCall(const std::string& name) {
+std::unique_ptr<ASTFunctionCall> PulseParser::ParseFunctionCall(const std::string &name)
+{
     auto call = std::make_unique<ASTFunctionCall>();
     call->name = name;
 
@@ -197,9 +227,11 @@ std::unique_ptr<ASTFunctionCall> PulseParser::ParseFunctionCall(const std::strin
 
     Consume(TokenType::LParen, "Expected '(' after function name");
 
-    if (Peek().type != TokenType::RParen) {
+    if (Peek().type != TokenType::RParen)
+    {
         call->args.push_back(ParseExpression());
-        while (Match(TokenType::Comma)) {
+        while (Match(TokenType::Comma))
+        {
             call->args.push_back(ParseExpression());
         }
     }
@@ -224,8 +256,10 @@ std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
     // 🟦 Parse parameter list
     std::vector<std::string> params;
 
-    if (Peek().type != TokenType::RParen) {
-        while (true) {
+    if (Peek().type != TokenType::RParen)
+    {
+        while (true)
+        {
 
             if (Peek().type != TokenType::Identifier)
                 throw std::runtime_error("Expected parameter name");
@@ -233,7 +267,8 @@ std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
             params.push_back(Peek().text);
             Next(); // consume identifier
 
-            if (Peek().type == TokenType::Comma) {
+            if (Peek().type == TokenType::Comma)
+            {
                 Next(); // consume comma and continue
                 continue;
             }
@@ -262,4 +297,3 @@ std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
 
     return func;
 }
-

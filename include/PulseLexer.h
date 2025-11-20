@@ -4,38 +4,20 @@
 #include <cctype>
 #include <variant>
 
+#include "utilities.h"
+
 using Value = std::variant<int, std::string>;
 
-enum class TokenType {
-    Identifier,
-    Number,
-    StringLiteral,
-    Function,   // custom function made by user
-
-    Let,        // var declaraction
-    Arrow,      // "->"
-    LParen,     // "("
-    RParen,     // ")"
-    Comma,      // ","
-    LBrace,
-    RBrace,
-
-    Plus,
-    Minus,
-    Star,
-    Slash,
-    
-    EndOfFile
-};
-
-struct Token {
+struct Token
+{
     TokenType type;
     std::string text;
 };
 
-class PulseLexer {
+class PulseLexer
+{
 public:
-    PulseLexer(const std::string& src);
+    PulseLexer(const std::string &src);
 
     Token Next();
     Token Peek();
