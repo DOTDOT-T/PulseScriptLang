@@ -1,13 +1,10 @@
-let age -> 20
-let delta -> 9 * 10
-let name -> "Dorian"
-log("the age of", name,"is", age)
-log("adapt age with the delta :", delta, "age :", age + delta)
-function Display(x)
+let player -> "Unnamed"
+let life -> 100
+let team -> "blue"
+
+function DisplayPlayerData(name, life, team)
 {
-    log("variable :", x)
+    log(name, "with", life, "is from team", team)
 }
 
-Display(age)
-Display(delta)
-Display(name)
+DisplayPlayerData(player, life, team)

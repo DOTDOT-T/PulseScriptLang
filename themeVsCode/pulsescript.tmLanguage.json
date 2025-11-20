@@ -1,0 +1,79 @@
+{
+  "scopeName": "source.pulsescript",
+  "patterns": [
+    { "include": "#keywords" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#function-def" },
+    { "include": "#function-call" },
+    { "include": "#variables" },
+    { "include": "#operators" }
+  ],
+  "repository": {
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.pulsescript",
+          "match": "\\b(let|function)\\b"
+        }
+      ]
+    },
+
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.pulsescript",
+          "match": "\"([^\"\\\\]|\\\\.)*\""
+        }
+      ]
+    },
+
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.pulsescript",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+
+    "function-def": {
+      "patterns": [
+        {
+          "name": "entity.name.function.pulsescript",
+          "match": "\\bfunction\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "entity.name.function.pulsescript" }
+          }
+        }
+      ]
+    },
+
+    "function-call": {
+      "patterns": [
+        {
+          "name": "support.function.call.pulsescript",
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()"
+        }
+      ]
+    },
+
+    "variables": {
+      "patterns": [
+        {
+          "name": "variable.other.readwrite.pulsescript",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+        }
+      ]
+    },
+
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.pulsescript",
+          "match": "(->|\\+|\\-|\\*|\\/)"
+        }
+      ]
+    }
+  }
+}

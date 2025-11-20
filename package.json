@@ -1,0 +1,28 @@
+{
+  "name": "pulsescript",
+  "displayName": "PulseScript",
+  "description": "Syntax highlight for the PulseScript language",
+  "version": "0.0.1",
+  "publisher": "yourname",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": ["Programming Languages"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "pulsescript",
+        "aliases": ["PulseScript", "pulsescript"],
+        "extensions": [".pulse", ".pscript", "PulseScript", ".pScript"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "pulsescript",
+        "scopeName": "source.pulsescript",
+        "path": "./themeVsCode/pulsescript.tmLanguage.json"
+      }
+    ]
+  }
+}
