@@ -1,0 +1,132 @@
+{
+  "name": "PulseTheme",
+  "type": "dark",
+
+  "colors": {
+    "editor.background": "#0E0F11",
+    "editor.foreground": "#E4E6EB",
+
+    "editorCursor.foreground": "#28FF78",
+
+    "editor.lineHighlightBackground": "#1C1E22AA",
+    "editor.selectionBackground": "#2A3138",
+    "editor.selectionHighlightBackground": "#21262E",
+
+    "editorIndentGuide.background": "#3A3F47",
+    "editorIndentGuide.activeBackground": "#5A616B",
+
+    "sideBar.background": "#0D0E10",
+    "activityBar.background": "#0B0C0E",
+
+    "tab.activeBackground": "#1A1D23",
+    "tab.inactiveBackground": "#111317",
+    "tab.activeForeground": "#FFFFFF",
+    "tab.inactiveForeground": "#7A7F86",
+
+    "statusBar.background": "#0A0B0D",
+    "statusBar.foreground": "#A9AFB8"
+  },
+
+  "tokenColors": [
+
+    {
+      "name": "Keywords (let, function, etc.)",
+      "scope": [
+        "keyword.control",
+        "keyword.control.pulsescript"
+      ],
+      "settings": {
+        "foreground": "#FFA14A",
+        "fontStyle": "bold"
+      }
+    },
+
+    {
+      "name": "PulseScript Arrow (->)",
+      "scope": "keyword.operator.arrow.pulsescript",
+      "settings": {
+        "foreground": "#28FF78",
+        "fontStyle": "bold"
+      }
+    },
+
+    {
+      "name": "Arithmetic Operators (+ - * /)",
+      "scope": [
+        "keyword.operator.arithmetic",
+        "keyword.operator"
+      ],
+      "settings": {
+        "foreground": "#FFFFFF"
+      }
+    },
+
+    {
+      "name": "Functions (definitions & calls)",
+      "scope": [
+        "entity.name.function.pulsescript",
+        "entity.name.function",
+        "support.function.call.pulsescript",
+        "meta.function-call"
+      ],
+      "settings": {
+        "foreground": "#4CA3FF",
+        "fontStyle": ""
+      }
+    },
+
+    {
+      "name": "Strings (text)",
+      "scope": [
+        "string",
+        "string.quoted.double",
+        "string.quoted.single"
+      ],
+      "settings": {
+        "foreground": "#C17F59",
+        "fontStyle": ""
+      }
+    },
+
+    {
+      "name": "Numbers",
+      "scope": "constant.numeric",
+      "settings": {
+        "foreground": "#D87C3B"
+      }
+    },
+
+    {
+      "name": "Variables",
+      "scope": [
+        "variable.other.readwrite",
+        "variable.other.readwrite.pulsescript"
+      ],
+      "settings": {
+        "foreground": "#E4E6EB"
+      }
+    },
+
+    {
+      "name": "Brackets & punctuation",
+      "scope": [
+        "punctuation",
+        "meta.brace",
+        "meta.bracket",
+        "meta.delimiter"
+      ],
+      "settings": {
+        "foreground": "#7A8088"
+      }
+    },
+
+    {
+      "name": "Comments",
+      "scope": "comment",
+      "settings": {
+        "foreground": "#5A616B",
+        "fontStyle": "italic"
+      }
+    }
+  ]
+}

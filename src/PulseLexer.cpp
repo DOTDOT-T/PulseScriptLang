@@ -143,14 +143,16 @@ Token PulseLexer::MakeIdentifierOrKeyword()
 Token PulseLexer::MakeNumber()
 {
     size_t start = pos;
+    bool hasComma = false;
 
-    while (!End() && std::isdigit(source[pos]))
+    while (!End() && (std::isdigit(source[pos]) || source[pos] == '.'))
     {
+        if(source[pos] == '.') hasComma = true;
         pos++;
     }
 
     std::string text = source.substr(start, pos - start);
-    return {TokenType::Number, text};
+    return {hasComma ? TokenType::FloatingNumber : TokenType::Number, text};
 }
 
 Token PulseLexer::MakeString()

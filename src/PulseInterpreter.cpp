@@ -100,22 +100,6 @@ Value PulseInterpreter::EvalExpression(const ASTExpression *expr)
 {
     if (!expr)
         throw std::runtime_error("Null expression");
-
-    if (auto n = dynamic_cast<const ASTNumber *>(expr))
-    {
-        return n->value;
-    }
-    if (auto s = dynamic_cast<const ASTString *>(expr))
-    {
-        return s->value;
-    }
-    if (auto id = dynamic_cast<const ASTIdentifier *>(expr))
-    {
-        auto it = scope.variables.find(id->name);
-        if (it != scope.variables.end())
-            return it->second;
-        throw std::runtime_error("Undefined variable: " + id->name);
-    }
     if (auto call = dynamic_cast<const ASTFunctionCall *>(expr))
     {
         std::vector<Value> args;
@@ -130,21 +114,49 @@ Value PulseInterpreter::EvalExpression(const ASTExpression *expr)
     }
     if (auto bin = dynamic_cast<const ASTBinaryOp *>(expr))
     {
-        int left = std::get<int>(EvalExpression(bin->left.get()));
-        int right = std::get<int>(EvalExpression(bin->right.get()));
+        auto leftVal = EvalExpression(bin->left.get());
+        auto rightVal = EvalExpression(bin->right.get());
 
-        switch (bin->op)
-        {
-        case '+':
-            return left + right;
-        case '-':
-            return left - right;
-        case '*':
-            return left * right;
-        case '/':
-            return left / right;
+        float leftF, rightF;
+
+        // Convert left operand
+        if (auto pInt = std::get_if<int>(&leftVal))
+            leftF = static_cast<float>(*pInt);
+        else if (auto pFloat = std::get_if<float>(&leftVal))
+            leftF = *pFloat;
+        else
+            throw std::runtime_error("Left operand is not numeric");
+
+        // Convert right operand
+        if (auto pInt = std::get_if<int>(&rightVal))
+            rightF = static_cast<float>(*pInt);
+        else if (auto pFloat = std::get_if<float>(&rightVal))
+            rightF = *pFloat;
+        else
+            throw std::runtime_error("Right operand is not numeric");
+
+        // Compute
+        float result;
+        switch (bin->op) {
+            case '+': result = leftF + rightF; break;
+            case '-': result = leftF - rightF; break;
+            case '*': result = leftF * rightF; break;
+            case '/': 
+                if (rightF == 0) throw std::runtime_error("Division by zero");
+                result = leftF / rightF; 
+                break;
+            default:
+                throw std::runtime_error("Unknown binary operator");
         }
+
+        // If both were int, maybe return int
+        if (std::holds_alternative<int>(leftVal) && std::holds_alternative<int>(rightVal))
+            return static_cast<int>(result);
+        return result;
+
     }
+
+    return expr->Evaluate(scope);
 
     throw std::runtime_error("Unknown expression type");
 }

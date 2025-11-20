@@ -5,10 +5,7 @@
 #include <memory>
 #include "PulseParser.h"
 
-struct Scope
-{
-    std::unordered_map<std::string, Value> variables;
-};
+
 
 class PulseInterpreter
 {

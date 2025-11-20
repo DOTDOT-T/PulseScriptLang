@@ -21,7 +21,14 @@
       {
         "language": "pulsescript",
         "scopeName": "source.pulsescript",
-        "path": "./themeVsCode/pulsescript.tmLanguage.json"
+        "path": "./themeVsCode/syntaxe/pulsescript.tmLanguage.json"
+      }
+    ],
+    "themes": [
+      {
+        "label": "PulseTheme",
+        "uiTheme": "vs-dark",
+        "path": "./themeVsCode/themes/PulseTheme-color-theme.json"
       }
     ]
   }

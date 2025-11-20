@@ -1,12 +1,16 @@
 #pragma once
 
+#include <unordered_map>
+
 enum class TokenType {
     Identifier,
     Number,
+    FloatingNumber,
     StringLiteral,
     Function,   // custom function made by user
 
     Let,        // var declaraction
+    Turn,       // var modification
     Arrow,      // "->"
     LParen,     // "("
     RParen,     // ")"
@@ -22,13 +26,22 @@ enum class TokenType {
     EndOfFile
 };
 
-//base struct for parser
+using Value = std::variant<int, float, std::string>;
 
+//base struct for parser
 struct ASTNode
 {
     virtual ~ASTNode() = default;
 };
 
+struct Scope
+{
+    std::unordered_map<std::string, Value> variables;
+};
+
 struct ASTExpression : ASTNode
 {
+    virtual ~ASTExpression() = default;
+    virtual Value Evaluate(const Scope& scope) const = 0;
 };
+

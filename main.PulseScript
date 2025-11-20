@@ -2,9 +2,16 @@ let player -> "Unnamed"
 let life -> 100
 let team -> "blue"
 
-function DisplayPlayerData(name, life, team)
+function DisplayPlayer(name, life, team)
 {
-    log(name, "with", life, "is from team", team)
+    let percent -> life / 67.0
+    log(name, percent, "% life", team)
 }
 
-DisplayPlayerData(player, life, team)
+DisplayPlayer(player, life, team)
+
+let player -> "PlayerName"
+
+DisplayPlayer(player, life, team)
+
+

@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <stdexcept>
 #include "PulseLexer.h"
 
 // AST NODES
@@ -11,24 +12,52 @@ struct ASTNumber : ASTExpression
 {
     int value;
     ASTNumber(int v) : value(v) {}
+    Value Evaluate(const Scope& scope) const override
+    {
+        return value;
+    }
+};
+struct ASTFloatingNumber : ASTExpression
+{
+    float value;
+    ASTFloatingNumber(float v) : value(v) {}
+    Value Evaluate(const Scope& scope) const override
+    {
+        return value;
+    }
 };
 
 struct ASTString : ASTExpression
 {
     std::string value;
     ASTString(const std::string &v) : value(v) {}
+    Value Evaluate(const Scope& scope) const override
+    {
+        return value;
+    }
 };
 
 struct ASTIdentifier : ASTExpression
 {
     std::string name;
     ASTIdentifier(const std::string &n) : name(n) {}
+    Value Evaluate(const Scope& scope) const override
+    {
+        auto it = scope.variables.find(name);
+        if (it != scope.variables.end())
+            return it->second;
+        throw std::runtime_error("Undefined variable: " + name);
+    }
 };
 
 struct ASTFunctionCall : ASTExpression
 {
     std::string name;
     std::vector<std::unique_ptr<ASTExpression>> args;
+    Value Evaluate(const Scope& scope) const override
+    {
+        throw std::runtime_error("To implemente ASTFunctionCall");
+    }
 };
 
 struct ASTBinaryOp : ASTExpression
@@ -41,6 +70,11 @@ struct ASTBinaryOp : ASTExpression
                 std::unique_ptr<ASTExpression> left,
                 std::unique_ptr<ASTExpression> right)
         : op(op), left(std::move(left)), right(std::move(right)) {}
+
+    Value Evaluate(const Scope& scope) const override
+    {
+        throw std::runtime_error("To implemente ASTFunctionCall");
+    }
 };
 
 struct ASTLetStatement : ASTNode

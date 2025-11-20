@@ -6,7 +6,6 @@
 
 #include "utilities.h"
 
-using Value = std::variant<int, std::string>;
 
 struct Token
 {

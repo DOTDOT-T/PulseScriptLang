@@ -40,10 +40,10 @@
     "function-def": {
       "patterns": [
         {
-          "name": "entity.name.function.pulsescript",
+          "name": "entity.name.function.definition.pulsescript",
           "match": "\\bfunction\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
-            "1": { "name": "entity.name.function.pulsescript" }
+            "1": { "name": "entity.name.function.definition.pulsescript" }
           }
         }
       ]
@@ -70,8 +70,12 @@
     "operators": {
       "patterns": [
         {
+          "name": "keyword.operator.arrow.pulsescript",
+          "match": "->"
+        },
+        {
           "name": "keyword.operator.pulsescript",
-          "match": "(->|\\+|\\-|\\*|\\/)"
+          "match": "(\\+|\\-|\\*|\\/)"
         }
       ]
     }

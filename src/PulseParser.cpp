@@ -153,6 +153,11 @@ std::unique_ptr<ASTExpression> PulseParser::ParseFactor()
         Next();
         return std::make_unique<ASTNumber>(std::stoi(t.text));
     }
+    if (t.type == TokenType::FloatingNumber)
+    {
+        Next();
+        return std::make_unique<ASTFloatingNumber>(std::stof(t.text));
+    }
 
     if (t.type == TokenType::StringLiteral)
     {
@@ -190,6 +195,11 @@ std::unique_ptr<ASTExpression> PulseParser::ParsePrimary()
     {
         Next();
         return std::make_unique<ASTNumber>(std::stoi(t.text));
+    }
+    if (t.type == TokenType::FloatingNumber)
+    {
+        Next();
+        return std::make_unique<ASTFloatingNumber>(std::stof(t.text));
     }
 
     if (t.type == TokenType::StringLiteral)
