@@ -145,7 +145,7 @@ Token PulseLexer::MakeNumber()
     size_t start = pos;
     bool hasComma = false;
 
-    while (!End() && (std::isdigit(source[pos]) || source[pos] == '.'))
+    while (!End() && (std::isdigit(source[pos]) || source[pos] == '.')) // use of the same function to find int and float
     {
         if(source[pos] == '.') hasComma = true;
         pos++;

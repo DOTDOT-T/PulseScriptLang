@@ -4,8 +4,8 @@ let team -> "blue"
 
 function DisplayPlayer(name, life, team)
 {
-    let percent -> life / 67.0
-    log(name, percent, "% life", team)
+    let percent -> life / 100.0
+    log(name, percent, "fill life value", team)
 }
 
 function Divide(number)

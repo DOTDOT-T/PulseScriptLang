@@ -4,24 +4,24 @@
 
 enum class TokenType {
     Identifier,
-    Number,
-    FloatingNumber,
-    StringLiteral,
-    Function,   // custom function made by user
+    Number,         // "3"
+    FloatingNumber, // "3.14"
+    StringLiteral,  // a string like -> "this is a string"
+    Function,       // custom function made by user
 
-    Let,        // var declaraction
-    Turn,       // var modification
-    Arrow,      // "->"
-    LParen,     // "("
-    RParen,     // ")"
-    Comma,      // ","
-    LBrace,
-    RBrace,
+    Let,            // var declaraction
+    Turn,           // var modification
+    Arrow,          // "->"
+    LParen,         // "("
+    RParen,         // ")"
+    Comma,          // ","
+    LBrace,         // "{"
+    RBrace,         // "}"
 
-    Plus,
-    Minus,
-    Star,
-    Slash,
+    Plus,           // "+"
+    Minus,          // "-"
+    Star,           // "*"
+    Slash,          // "/"
     
     EndOfFile
 };

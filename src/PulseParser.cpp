@@ -263,7 +263,7 @@ std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
 
     Consume(TokenType::LParen, "Expected '(' after function name");
 
-    // 🟦 Parse parameter list
+    // Parse parameter list
     std::vector<std::string> params;
 
     if (Peek().type != TokenType::RParen)
