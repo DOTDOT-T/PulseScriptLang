@@ -264,18 +264,37 @@ std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
     Consume(TokenType::LParen, "Expected '(' after function name");
 
     // Parse parameter list
-    std::vector<std::string> params;
+    std::vector<Parameter> params;
 
     if (Peek().type != TokenType::RParen)
     {
         while (true)
         {
 
-            if (Peek().type != TokenType::Identifier)
-                throw std::runtime_error("Expected parameter name");
+            if (Peek().type == TokenType::Identifier)
+            {
+                params.push_back({.name = Peek().text, .passMethod = ParamPassMethod::COPY});
+                Next(); // consume identifier
+            }
+            else if (Peek().type == TokenType::Copy)
+            {
+                params.push_back({.name = Peek(1).text, .passMethod = ParamPassMethod::COPY});
+                Next(); // consume pass method
+                Next(); // consume identifier
+            }
+            else if (Peek().type == TokenType::Reference)
+            {
+                params.push_back({.name = Peek(1).text, .passMethod = ParamPassMethod::REFERENCE});
+                Next(); // consume pass method
+                Next(); // consume identifier
+            }
+            else if (Peek().type == TokenType::Const_Reference)
+            {
+                params.push_back({.name = Peek(1).text, .passMethod = ParamPassMethod::CONST_REFERENCE});
+                Next(); // consume pass method
+                Next(); // consume identifier
+            }
 
-            params.push_back(Peek().text);
-            Next(); // consume identifier
 
             if (Peek().type == TokenType::Comma)
             {
@@ -302,7 +321,7 @@ std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
 
     auto func = std::make_unique<ASTFunctionDef>();
     func->name = funcName;
-    func->parameters = std::move(params);
+    func->parameters = params;
     func->body = std::move(body);
 
     return func;

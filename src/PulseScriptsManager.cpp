@@ -1,4 +1,5 @@
 #include "PulseScriptsManager.h"
+#include "PulseInterpreter.h"
 #include "PulseScript.h"
 
 std::unordered_map<std::string, std::shared_ptr<PulseScript>> PulseScriptsManager::scripts;
@@ -26,3 +27,14 @@ std::shared_ptr<PulseScript> PulseScriptsManager::GetScript(const std::string& s
     }
 }
 
+bool PulseScriptsManager::ExecuteScript(const std::string &scriptName)
+{
+    std::shared_ptr<PulseScript> script = GetScript(scriptName);
+    if(script)
+    {
+        script->Execute();
+        return true;
+    }
+
+    return false;
+}

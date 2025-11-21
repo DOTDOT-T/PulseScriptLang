@@ -6,13 +6,14 @@
 #include <string>
 
 class PulseScript;
+class PulseInterpreter;
 
 class PulseScriptsManager
 {
 public:
     static void AddScriptToDatabase(const std::string& scriptPath);
     static std::shared_ptr<PulseScript> GetScript(const std::string& scriptName);
-
+    static bool ExecuteScript(const std::string& scriptName);
 
 private:
     static std::unordered_map<std::string, std::shared_ptr<PulseScript>> scripts; // name -> script

@@ -1,18 +1,23 @@
 let player -> "Unnamed"
 let life -> 100
 let team -> "blue"
+let regen -> 1
 
 function DisplayPlayer(name, life, team)
 {
-    let percent -> life / 100.0
+    let percent -> life /100
     log(name, percent, "fill life value", team)
 }
 
+function ManagePlayerLife(ref value, copy added)
+{
+    let added -> added * 1000000
+    let value -> value + added 
+}
 
-
-DisplayPlayer(player, life, team)
-
-let player -> "PlayerName"
-
-
-DisplayPlayer(player, life, team)
+function Update()
+{
+    ManagePlayerLife(life, regen)
+    DisplayPlayer(player, life, team)
+    log("added is :", regen)
+}

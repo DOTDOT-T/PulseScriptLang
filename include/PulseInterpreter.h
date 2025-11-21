@@ -51,14 +51,29 @@ class PulseInterpreter
 public:
     PulseInterpreter();
 
+
     // exécution d'une liste de statements
     void Execute(const std::vector<std::unique_ptr<ASTStatement>> &stmts);
-    void ExecuteFunction(ASTFunctionDef *func, const std::vector<Value> &args);
+
+    /**
+     * @brief Declare data of the scope : variable and function that are "global".
+     * 
+     * @param stmts 
+     */
+    void DeclareGlobalVariable(const std::vector<std::unique_ptr<ASTStatement>> &stmts);
+    
+    void DeclareVariable(ASTLetStatement *letStmt);
+    void GenerateUserFunctions(ASTFunctionDef *fdef);
+
+    void ExecuteFunction(ASTFunctionDef *func, const std::vector<Variable> &args);
+    void ExecuteFunction(const std::string& func, const std::vector<Variable> &args, const std::vector<std::unique_ptr<ASTStatement>> &stmts);
     // fonctions natives
     void RegisterFunction(const std::string &name, std::function<Value(const std::vector<Value> &)> func);
 
     const Scope &GetScope() const { return scope; }
 
+    std::unique_ptr<ASTExpression> CloneExpression(const ASTExpression* expr);
+    std::unique_ptr<ASTStatement> CloneStatement(const ASTStatement* stmt);
 private:
     Value EvalExpression(const ASTExpression *expr);
 

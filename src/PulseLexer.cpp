@@ -137,6 +137,21 @@ Token PulseLexer::MakeIdentifierOrKeyword()
         return {TokenType::Function, text};
     }
 
+    if (text == "ref")
+    {
+        return {TokenType::Reference, text};
+    }
+
+    if (text == "copy")
+    {
+        return {TokenType::Copy, text};
+    }
+
+    if (text == "constref")
+    {
+        return {TokenType::Const_Reference, text};
+    }
+
     return {TokenType::Identifier, text};
 }
 

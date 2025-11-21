@@ -24,7 +24,15 @@ PulseScript::PulseScript(const char *scriptPath)
     PulseParser parser(tokens);
     auto src = parser.ParseScript();
     ast = std::move(src);
-    interpreter = std::make_unique<PulseInterpreter>();
+
+    itp = std::make_shared<PulseInterpreter>();
+    
+    std::vector<std::unique_ptr<ASTStatement>> clonedAst;
+    for (auto& stmt : ast) {
+        clonedAst.push_back(itp->CloneStatement(stmt.get()));
+    }
+
+    itp->DeclareGlobalVariable(std::move(clonedAst));
 
 }
 
@@ -34,7 +42,12 @@ PulseScript::~PulseScript()
 
 void PulseScript::Execute()
 {
-    interpreter->Execute(ast);
+    itp->Execute(ast);
+}
+
+void PulseScript::ExecuteScriptFunction(const char *functionName, const std::vector<Variable> &args)
+{
+    itp->ExecuteFunction(std::string(functionName), args, ast);
 }
 
 std::string PulseScript::ReadFileToString(const std::string& filename) 
