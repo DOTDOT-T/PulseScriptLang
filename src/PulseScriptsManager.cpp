@@ -38,3 +38,13 @@ bool PulseScriptsManager::ExecuteScript(const std::string &scriptName)
 
     return false;
 }
+
+bool PulseScriptsManager::ExecuteMethodOnEachScript(const char* methodName, std::vector<Variable> args)
+{
+    for(auto& script : scripts)
+    {
+        script.second->ExecuteScriptFunction(methodName, args);
+    }
+
+    return true;
+}

@@ -68,7 +68,7 @@ public:
     void ExecuteFunction(ASTFunctionDef *func, const std::vector<Variable> &args);
     void ExecuteFunction(const std::string& func, const std::vector<Variable> &args, const std::vector<std::unique_ptr<ASTStatement>> &stmts);
     // fonctions natives
-    void RegisterFunction(const std::string &name, std::function<Value(const std::vector<Value> &)> func);
+    static void RegisterFunction(const std::string &name, std::function<Value(const std::vector<Value> &)> func);
 
     const Scope &GetScope() const { return scope; }
 
@@ -78,6 +78,6 @@ private:
     Value EvalExpression(const ASTExpression *expr);
 
     Scope scope;
-    std::unordered_map<std::string, std::function<Value(const std::vector<Value> &)>> nativeFunctions;
+    static std::unordered_map<std::string, std::function<Value(const std::vector<Value> &)>> nativeFunctions;
     std::unordered_map<std::string, std::unique_ptr<ASTFunctionDef>> userFunctions;
 };

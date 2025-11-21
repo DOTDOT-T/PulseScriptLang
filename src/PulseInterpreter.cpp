@@ -4,19 +4,12 @@
 
 #include <iostream>
 
+std::unordered_map<std::string, std::function<Value(const std::vector<Value> &)>> PulseInterpreter::nativeFunctions;
+
 PulseInterpreter::PulseInterpreter()
 {
 
     // Exemple : fonction log
-    RegisterFunction("log", [this](const std::vector<Value> &args) -> Value
-                     {
-        for (const auto& v : args) 
-        {
-            std::visit([](auto&& val)
-            { std::cout << val << " "; }, v);
-        }
-        std::cout << std::endl;
-        return 0; });
 }
 
 void PulseInterpreter::DeclareGlobalVariable(const std::vector<std::unique_ptr<ASTStatement>> &stmts)

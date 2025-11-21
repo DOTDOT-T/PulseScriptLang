@@ -31,12 +31,13 @@
  */
 
 #pragma once
+#include "PulseLexer.h"
 #include <vector>
 #include <string>
 #include <memory>
 #include <functional>
 #include <stdexcept>
-#include "PulseLexer.h"
+#include "utilities.h"
 
 // AST NODES
 
