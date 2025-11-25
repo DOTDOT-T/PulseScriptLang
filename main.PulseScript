@@ -1,23 +1,12 @@
 let player -> "Unnamed"
-let life -> 100
-let team -> "blue"
-let regen -> 1
-
-function DisplayPlayer(name, life, team)
-{
-    let percent -> life /100
-    log(name, percent, "fill life value", team)
-}
-
-function ManagePlayerLife(ref value, copy added)
-{
-    let added -> added * 1000000
-    let value -> value + added 
-}
+let condition -> 100
 
 function Update()
 {
-    ManagePlayerLife(life, regen)
-    DisplayPlayer(player, life, team)
-    log("added is :", regen)
+    if condition > 10 {
+        log("player cond is > at 10")
+    } else {
+        log("player cond is <= at 10")
+    }
+
 }
