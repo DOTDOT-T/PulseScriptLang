@@ -53,7 +53,7 @@ public:
 
 
     // exécution d'une liste de statements
-    void Execute(const std::vector<std::unique_ptr<ASTStatement>> &stmts);
+    Value Execute(const std::vector<std::unique_ptr<ASTStatement>> &stmts);
 
     /**
      * @brief Declare data of the scope : variable and function that are "global".
@@ -65,8 +65,8 @@ public:
     void DeclareVariable(ASTLetStatement *letStmt);
     void GenerateUserFunctions(ASTFunctionDef *fdef);
 
-    void ExecuteFunction(ASTFunctionDef *func, const std::vector<Variable> &args);
-    void ExecuteFunction(const std::string& func, const std::vector<Variable> &args, const std::vector<std::unique_ptr<ASTStatement>> &stmts);
+    Value ExecuteFunction(ASTFunctionDef *func, const std::vector<Variable> &args);
+    Value ExecuteFunction(const std::string& func, const std::vector<Variable> &args, const std::vector<std::unique_ptr<ASTStatement>> &stmts);
     // fonctions natives
     static void RegisterFunction(const std::string &name, std::function<Value(const std::vector<Value> &)> func);
 
@@ -77,7 +77,7 @@ public:
 
     void ExecuteIf(ASTIfStatement* ifStmt);
 private:
-    Value EvalExpression(const ASTExpression *expr);
+    Value EvalExpression(const ASTExpression *expr, bool canTriggerFunc = true);
 
     Scope scope;
     static std::unordered_map<std::string, std::function<Value(const std::vector<Value> &)>> nativeFunctions;

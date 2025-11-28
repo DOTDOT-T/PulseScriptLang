@@ -33,10 +33,15 @@ void PulseInterpreter::RegisterFunction(const std::string &name, std::function<V
     nativeFunctions[name] = func;
 }
 
-void PulseInterpreter::Execute(const std::vector<std::unique_ptr<ASTStatement>> &stmts)
+Value PulseInterpreter::Execute(const std::vector<std::unique_ptr<ASTStatement>> &stmts)
 {
     for (auto &stmt : stmts)
     {
+        if (auto ret = dynamic_cast<ASTReturn*>(stmt->content.get()))
+        {
+            Value val = ret->value ? EvalExpression(ret->value.get()) : 0;
+            return val ;
+        }
         if (auto letStmt = dynamic_cast<ASTLetStatement *>(stmt->content.get()))
         {
             // exécution d'un let
@@ -59,7 +64,7 @@ void PulseInterpreter::Execute(const std::vector<std::unique_ptr<ASTStatement>> 
                     if(id) args.push_back({.value = EvalExpression(a.get()), .name = id->name});
                     else args.push_back({.value = EvalExpression(a.get())});
                 }
-                ExecuteFunction(it->second.get(), args);
+                return ExecuteFunction(it->second.get(), args);
             }
             else
             {
@@ -84,6 +89,8 @@ void PulseInterpreter::Execute(const std::vector<std::unique_ptr<ASTStatement>> 
             ExecuteIf(ifStmt);
         }
     }
+
+    return 0;
 }
 
 void PulseInterpreter::DeclareVariable(ASTLetStatement *letStmt)
@@ -107,8 +114,9 @@ void PulseInterpreter::GenerateUserFunctions(ASTFunctionDef *fdef )
     }
 }
 
-void PulseInterpreter::ExecuteFunction(ASTFunctionDef *func, const std::vector<Variable> &args)
+Value PulseInterpreter::ExecuteFunction(ASTFunctionDef *func, const std::vector<Variable> &args)
 {
+    std::cout << "executing " << func->name << std::endl; 
     if (args.size() != func->parameters.size())
         throw std::runtime_error("Wrong number of arguments in function call");
 
@@ -139,18 +147,18 @@ void PulseInterpreter::ExecuteFunction(ASTFunctionDef *func, const std::vector<V
         scope.variables[func->parameters[i].name] = var;
     }
     // add local variable to scope    
-    for (auto& stmt : func->body) 
-    {
-        if (auto letStmt = dynamic_cast<ASTLetStatement*>(stmt->content.get())) 
-        {
-            if(scope.variables.contains(letStmt->varName)) continue;
-            Value val = EvalExpression(letStmt->value.get());
-            scope.variables[letStmt->varName] = {.value = val, .name = letStmt->varName };
-        }
-    }
+    // for (auto& stmt : func->body) 
+    // {
+    //     if (auto letStmt = dynamic_cast<ASTLetStatement*>(stmt->content.get())) 
+    //     {
+    //         if(scope.variables.contains(letStmt->varName)) continue;
+    //         Value val = EvalExpression(letStmt->value.get(), false);
+    //         scope.variables[letStmt->varName] = {.value = val, .name = letStmt->varName };
+    //     }
+    // }
 
-    // Execute body
-    Execute(func->body);
+    auto val = Execute(func->body);
+
 
     // If code modified variables marked as global in the local scope, write
     // them back to the previous snapshot using Scope::Set so parent lookup
@@ -187,9 +195,11 @@ void PulseInterpreter::ExecuteFunction(ASTFunctionDef *func, const std::vector<V
 
     // Restore previous scope (move the stored snapshot back into member)
     scope = std::move(*previousPtr);
+
+    return val;
 }
 
-void PulseInterpreter::ExecuteFunction(const std::string &func, const std::vector<Variable> &args, const std::vector<std::unique_ptr<ASTStatement>> &stmts)
+Value PulseInterpreter::ExecuteFunction(const std::string &func, const std::vector<Variable> &args, const std::vector<std::unique_ptr<ASTStatement>> &stmts)
 {
 
     for (auto &stmt : stmts)
@@ -203,10 +213,10 @@ void PulseInterpreter::ExecuteFunction(const std::string &func, const std::vecto
     }
         
     
-    ExecuteFunction(userFunctions[func].get(), args);
+    return ExecuteFunction(userFunctions[func].get(), args);
 }
 
-Value PulseInterpreter::EvalExpression(const ASTExpression *expr)
+Value PulseInterpreter::EvalExpression(const ASTExpression *expr, bool canTriggerFunc)
 {
     if (!expr)
         throw std::runtime_error("Null expression");
@@ -217,9 +227,22 @@ Value PulseInterpreter::EvalExpression(const ASTExpression *expr)
         {
             args.push_back(EvalExpression(arg.get()));
         }
-        auto it = nativeFunctions.find(call->name);
-        if (it != nativeFunctions.end())
-            return it->second(args);
+        auto itNat = nativeFunctions.find(call->name);
+        if (itNat != nativeFunctions.end())
+            return itNat->second(args);
+        auto it = userFunctions.find(call->name);
+        if (it != userFunctions.end())
+        {
+            if(!canTriggerFunc) return 0;
+            std::vector<Variable> argsVar;
+            for (auto &a : call->args)
+            {
+                ASTIdentifier* id = dynamic_cast<ASTIdentifier*>(a.get());
+                if(id) argsVar.push_back({.value = EvalExpression(a.get()), .name = id->name});
+                else argsVar.push_back({.value = EvalExpression(a.get())});
+            }
+            return ExecuteFunction(it->second.get(), argsVar);
+        }
         throw std::runtime_error("Unknown function: " + call->name);
     }
     if (auto bin = dynamic_cast<const ASTBinaryOp *>(expr))
@@ -255,6 +278,10 @@ Value PulseInterpreter::EvalExpression(const ASTExpression *expr)
                 if (rightF == 0) throw std::runtime_error("Division by zero");
                 result = leftF / rightF; 
                 break;
+            case '%':
+                if (rightF == 0) throw std::runtime_error("Modulo by zero");
+                result = static_cast<float>(static_cast<int>(leftF) % static_cast<int>(rightF));
+                break;
             default:
                 throw std::runtime_error("Unknown binary operator");
         }
@@ -264,6 +291,11 @@ Value PulseInterpreter::EvalExpression(const ASTExpression *expr)
             return static_cast<int>(result);
         return result;
 
+    }
+
+    if (auto ret = dynamic_cast<const ASTReturn *>(expr))
+    {
+        return ret->value.get()->Evaluate(scope);
     }
 
     return expr->Evaluate(scope);
@@ -324,8 +356,14 @@ std::unique_ptr<ASTStatement> PulseInterpreter::CloneStatement(const ASTStatemen
     if (!stmt) return nullptr;
 
     auto copy = std::make_unique<ASTStatement>();
-
-    if (auto letStmt = dynamic_cast<const ASTLetStatement*>(stmt->content.get()))
+    if (auto ret = dynamic_cast<const ASTReturn*>(stmt->content.get()))
+    {
+        auto retCopy = std::make_unique<ASTReturn>();
+        if (ret->value)
+            retCopy->value = CloneExpression(ret->value.get());
+        copy->content = std::move(retCopy);
+    }
+    else if (auto letStmt = dynamic_cast<const ASTLetStatement*>(stmt->content.get()))
     {
         auto letCopy = std::make_unique<ASTLetStatement>();
         letCopy->varName = letStmt->varName;

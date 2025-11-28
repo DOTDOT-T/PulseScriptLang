@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <variant>
+#include <string>
 
 enum class TokenType {
     Identifier,
@@ -27,12 +28,14 @@ enum class TokenType {
     LessEqual,
     EqualEqual,
     NotEqual,
+    Return,
     
     // arithmetic operator
     Plus,               // "+"
     Minus,              // "-"
     Star,               // "*"
     Slash,              // "/"
+    Modulo,             // "%"
 
     // argument specifier
     Reference,          // reference to a variable
@@ -75,6 +78,12 @@ struct Parameter
     std::string name;    
     ParamPassMethod passMethod = ParamPassMethod::COPY;
 };
+
+struct ReturnException
+{
+    Value value;
+};
+
 
 struct Scope {
     Scope* parent = nullptr;

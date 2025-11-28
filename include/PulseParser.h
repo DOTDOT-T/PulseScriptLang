@@ -79,6 +79,7 @@ struct ASTIdentifier : ASTExpression
         Variable* it = scope.Find(name);
         if (it)
             return it->value;
+
         throw std::runtime_error("Undefined variable: " + name);
     }
 };
@@ -95,7 +96,7 @@ struct ASTFunctionCall : ASTExpression
 
 struct ASTBinaryOp : ASTExpression
 {
-    char op; // '+', '-', '*', '/'
+    char op; // '+', '-', '*', '/', '%'
     std::unique_ptr<ASTExpression> left;
     std::unique_ptr<ASTExpression> right;
 
@@ -160,6 +161,12 @@ struct ASTFunctionDef : ASTNode
     std::vector<std::unique_ptr<ASTStatement>> body;
 };
 
+struct ASTReturn : ASTNode
+{
+    std::unique_ptr<ASTExpression> value; // can be null
+};
+
+
 struct ASTIfStatement : ASTNode
 {
     std::unique_ptr<ASTExpression> condition;
@@ -194,7 +201,7 @@ private:
 
     std::unique_ptr<ASTExpression> ParseTerm();
     std::unique_ptr<ASTExpression> ParseFactor();
-
+    std::unique_ptr<ASTExpression> ParseComparison();
 private:
     std::vector<Token> tokens;
     size_t pos = 0;

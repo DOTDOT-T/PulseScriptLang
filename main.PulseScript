@@ -1,12 +1,4 @@
-let player -> "Unnamed"
-let condition -> 100
-
 function Update()
 {
-    if condition > 10 {
-        log("player cond is > at 10")
-    } else {
-        log("player cond is <= at 10")
-    }
-
+    Log("rand:", Rand())
 }

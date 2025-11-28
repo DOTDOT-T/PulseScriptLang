@@ -14,7 +14,7 @@
       "patterns": [
         {
           "name": "keyword.control.pulsescript",
-          "match": "\\b(let|function|ref|copy|constref|if|else)\\b|->"
+          "match": "\\b(let|function|ref|copy|constref|if|else|return)\\b|->"
         }
       ]
     },

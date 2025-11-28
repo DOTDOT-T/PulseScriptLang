@@ -91,6 +91,26 @@ std::unique_ptr<ASTStatement> PulseParser::ParseStatement()
         return stmt;
     }
 
+    if (Peek().type == TokenType::Return)
+    {
+        Next(); // consume 'return'
+
+        auto ret = std::make_unique<ASTReturn>();
+
+        // Optional expression: return <expr>;
+        if (Peek().type != TokenType::RBrace && Peek().type != TokenType::RBrace)
+        {
+            ret->value = ParseExpression();
+        }
+
+
+        auto stmt = std::make_unique<ASTStatement>();
+        stmt->content = std::move(ret);
+        return stmt;
+    }
+
+
+
     throw std::runtime_error("Unexpected token at statement start");
 }
 
@@ -147,9 +167,9 @@ std::unique_ptr<ASTExpression> PulseParser::ParseTerm()
 {
     auto left = ParseFactor();
 
-    while (Peek().type == TokenType::Star || Peek().type == TokenType::Slash)
+    while (Peek().type > TokenType::Return && Peek().type < TokenType::Reference)
     {
-        char op = (Peek().type == TokenType::Star) ? '*' : '/';
+        char op = Peek().text[0];
         Next();
         auto right = ParseFactor();
         left = std::make_unique<ASTBinaryOp>(op, std::move(left), std::move(right));
@@ -197,6 +217,8 @@ std::unique_ptr<ASTExpression> PulseParser::ParseFactor()
         Consume(TokenType::RParen, "Expected ')'");
         return expr;
     }
+
+    if( t.type == TokenType::Function) {}
 
     throw std::runtime_error("Invalid expression start");
 }
@@ -299,7 +321,6 @@ std::unique_ptr<ASTFunctionCall> PulseParser::ParseFunctionCall(const std::strin
     }
 
     Consume(TokenType::RParen, "Expected ')' after function arguments");
-
     return call;
 }
 
@@ -346,7 +367,6 @@ std::unique_ptr<ASTFunctionDef> PulseParser::ParseFunctionDef()
                 Next(); // consume pass method
                 Next(); // consume identifier
             }
-
 
             if (Peek().type == TokenType::Comma)
             {

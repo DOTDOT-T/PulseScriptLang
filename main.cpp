@@ -8,9 +8,10 @@
 
 int main() 
 {
-    PulseScriptsManager::AddScriptToDatabase("main.PulseScript");
+    PulseScriptsManager psm;
+    psm.AddScriptToDatabase("main.PulseScript");
 
-    PulseInterpreter::RegisterFunction("log",
+    PulseInterpreter::RegisterFunction("Log",
         [&](const std::vector<Value>& args) -> Value
         {
             for(auto& arg : args)
@@ -28,11 +29,22 @@ int main()
         }
     );
 
+    PulseInterpreter::RegisterFunction("Rand",
+        [&](const std::vector<Value>& args) -> Value
+        {
+            return rand();
+        }
+    );
+
 
     std::vector<Variable> args;
-    while(true)
-    // PulseScriptsManager::GetScript("main.PulseScript")->Execute();
-    PulseScriptsManager::GetScript("main.PulseScript")->ExecuteScriptFunction("Update", args);
+    while(true) 
+    {
+        std::cout << "new frame" << std::endl;
+        psm.GetScript("main.PulseScript")->ExecuteScriptFunction("Update", args);
+        std::cout << "end frame" << std::endl;
+        std::cin.get();
+    }
 
     std::cin.get();
     return 0;

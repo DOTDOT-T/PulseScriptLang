@@ -84,6 +84,7 @@ Token PulseLexer::Next()
     if (source[pos] == '<' && source[pos+1] == '=') { pos += 2; return Token{TokenType::GreaterEqual, "<="}; }
     else if (source[pos] == '<') { pos++; return Token{TokenType::Greater, "<"}; }
     if(source[pos] == '=') {pos++; return Token{TokenType::EqualEqual, "="}; }
+    if(c == '%') {pos++; return Token{TokenType::Modulo, "%"}; };
 
 
     // --- arrow "->" ---
@@ -141,6 +142,7 @@ Token PulseLexer::MakeIdentifierOrKeyword()
     if (text == "constref") return {TokenType::Const_Reference, text};    
     if (text == "if") return { TokenType::If, text};
     if (text == "else") return { TokenType::Else, text};
+    if (text == "return") return { TokenType::Return, text};
 
 
     return {TokenType::Identifier, text};
